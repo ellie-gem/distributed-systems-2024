@@ -1,0 +1,24 @@
+Oct 28, 2024 6:19:07 PM org.aggregationServer.AggregationServer loadDataFromFile
+INFO: File does not exist or is empty: backup-files/weather_data_backup.json
+
+Oct 28, 2024 6:19:07 PM org.aggregationServer.AggregationServer startExpirationChecker
+INFO: Started expiration checker
+
+Oct 28, 2024 6:19:07 PM org.aggregationServer.AggregationServer lambda$startPeriodicSave$1
+INFO: Started periodic save to storage
+
+Oct 28, 2024 6:19:07 PM org.aggregationServer.AggregationServer <init>
+INFO: Aggregation Server started and listening on port 4567
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.AggregationServer start
+INFO: New client connected from: 127.0.0.1:47224
+
+Oct 28, 2024 6:19:47 PM org.aggregationServer.AggregationServer start
+INFO: New client connected from: 127.0.0.1:33140
+
+Oct 28, 2024 6:19:48 PM org.aggregationServer.AggregationServer updateWeatherData
+INFO: Adding weather data into concurrent hashmap and updating last communicated time
+
+Oct 28, 2024 6:20:03 PM org.aggregationServer.AggregationServer stopServer
+INFO: Shutting down Aggregation Server...
+

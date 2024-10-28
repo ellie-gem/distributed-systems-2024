@@ -1,0 +1,18 @@
+Oct 28, 2024 6:19:47 PM org.aggregationServer.ContentServer <init>
+INFO: [Server Main-Content-Server] Content Server created.
+
+Oct 28, 2024 6:19:47 PM org.aggregationServer.ContentServer run
+INFO: [ContentServer Main-Content-Server] Weather data parsed successfully.
+
+Oct 28, 2024 6:19:47 PM org.aggregationServer.ContentServer run
+INFO: [ContentServer Main-Content-Server] started. Sending PUT requests every 20000 ms. Ctrl+C to stop.
+
+Oct 28, 2024 6:19:48 PM org.aggregationServer.ContentServer sendPutRequest
+INFO: PUT request sent, Response Code: 201
+
+Oct 28, 2024 6:19:48 PM org.aggregationServer.ContentServer run
+INFO: [ContentServer Main-Content-Server] Weather data sent.
+
+Oct 28, 2024 6:20:00 PM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer Main-Content-Server] Shutting down...
+

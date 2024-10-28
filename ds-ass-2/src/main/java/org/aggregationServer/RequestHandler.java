@@ -1,10 +1,13 @@
 package org.aggregationServer;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.*;
 import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.*;
 
 public class RequestHandler implements Runnable {
@@ -19,7 +22,7 @@ public class RequestHandler implements Runnable {
      * Constructs a request handler
      * @param clientSocket a socket (passed to client handler from accepting the connection request)
      *                     that is used to communicate with the client
-     * @throws
+     * @throws IOException when error occur while creating buffered reader and writer
      */
     public RequestHandler(Socket clientSocket, AggregationServer aggServer) throws IOException {
         this.clientSocket = clientSocket;
@@ -29,8 +32,9 @@ public class RequestHandler implements Runnable {
         try {
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+            LOGGER.info("RequestHandler created for Client: " + clientSocket.getInetAddress().getHostAddress() + ":" + clientSocket.getPort() + "\n");
         } catch (IOException e) {
-            LOGGER.severe("Error creating I/O streams: " + e.getMessage());
+            LOGGER.severe("Error creating I/O streams: " + e.getMessage() + "\n");
             closeConnection();
         }
     }
@@ -41,27 +45,26 @@ public class RequestHandler implements Runnable {
     @Override
     public void run() {
         try {
-            String requestLine = in.readLine();
+            while (!clientSocket.isClosed()) {  // Keep reading requests while socket is open
+                String requestLine = in.readLine();
 
-            if (requestLine != null && !requestLine.isEmpty()) {
-                if (requestLine.startsWith("GET")) {
-                    handleGetRequest(requestLine);
-                } else if (requestLine.startsWith("PUT")) {
-                    handlePutRequest(requestLine);
-                } else {
-                    sendResponse(null, 400, aggregationServer.getLamportClock());
+                if (requestLine != null && !requestLine.isEmpty()) {
+                    if (requestLine.startsWith("GET")) {
+                        handleGetRequest(requestLine);
+                    } else if (requestLine.startsWith("PUT")) {
+                        handlePutRequest();
+                    } else {
+                        sendResponse(null, 400, aggregationServer.clock.increment());
+                    }
                 }
-            } else {
-                // In the case where request is incomplete or the client closed the connection
-                sendResponse(null, 400, aggregationServer.getLamportClock());
             }
 
         } catch (IOException e) {
-            LOGGER.warning("Error handling request: " + e.getMessage());
+            LOGGER.warning("Error handling request: " + e.getMessage() + "\n");
             try {
-                sendResponse(null, 500, aggregationServer.getLamportClock());
+                sendResponse(null, 500, aggregationServer.clock.increment());
             } catch (IOException ioException) {
-                LOGGER.severe("Failed to send error response: " + ioException.getMessage());
+                LOGGER.severe("Failed to send error response: " + ioException.getMessage() + "\n");
             }
         } finally {
             closeConnection();
@@ -70,21 +73,21 @@ public class RequestHandler implements Runnable {
 
     /**
      * Parses the GET request and then queries the hashmap
-     * @throws IOException
+     * @throws IOException when error occur during processing GET request
      */
     private void handleGetRequest(String requestLine) throws IOException {
         try {
             // Parse
             String[] requestParts = requestLine.split(" ");
             if (requestParts.length < 2) {
-                sendResponse(null, 400, aggregationServer.getLamportClock());
+                sendResponse(null, 400, aggregationServer.clock.increment());
                 return;
             }
 
             String url = requestParts[1];
             String[] urlParts = url.split("\\?");
             if (urlParts.length < 2 || !urlParts[0].equals("/weather_data.json")) {
-                sendResponse(null, 400, aggregationServer.getLamportClock());
+                sendResponse(null, 400, aggregationServer.clock.increment());
                 return;
             }
 
@@ -92,106 +95,187 @@ public class RequestHandler implements Runnable {
             String queryParams = urlParts[1];
             String[] queryParamsArray = queryParams.split("&");
             String stationID = null;
-            int clientLamportClock = -1;
+            int receivedLamportClock = -1;
 
             for (String param : queryParamsArray) {
                 if (param.startsWith("station-id=")) {
                     stationID = param.split("=")[1];
                 } else if (param.startsWith("lamport-clock=")) {
                     try {
-                        clientLamportClock = Integer.parseInt(param.split("=")[1]);
+                        receivedLamportClock = Integer.parseInt(param.split("=")[1]);
                     } catch (NumberFormatException e) {
-                        sendResponse(null, 400, aggregationServer.getLamportClock());
+                        sendResponse(null, 400, aggregationServer.clock.increment());
                         return;
                     }
                 }
             }
 
-            if (stationID == null || clientLamportClock == -1) {
-                sendResponse(null, 400, aggregationServer.getLamportClock());
+            if (stationID == null || receivedLamportClock == -1) {
+                sendResponse(null, 400, aggregationServer.clock.increment());
                 return;
             }
 
             // Update lamport clock
-            int newLamportClock = aggregationServer.updateLamportClock(clientLamportClock);
+            aggregationServer.clock.updateOnReceive(receivedLamportClock);
 
-            WeatherData data = aggregationServer.getWeatherData(stationID);
-            if (data == null) {
-                sendResponse(null, 404, newLamportClock);
-            } else {
-                String jsonResponse = objectMapper.writeValueAsString(data);
-                sendResponse(jsonResponse, 200, newLamportClock);
+            // Below parts are for queueing requests: serve request that has lower lamport clock
+            // Create and queue the request
+            Request request = new Request(
+                    "GET",
+                    stationID,
+                    receivedLamportClock,
+                    null
+            );
+            aggregationServer.queueRequest(request);
+
+            // Wait for response with timeout
+            try {
+                String response = request.getResponse().get(30, TimeUnit.SECONDS);
+
+                if (response.isEmpty()) {
+                    sendResponse(null, 404, aggregationServer.clock.increment());
+                } else {
+                    sendResponse(response, 200, aggregationServer.clock.increment());
+                }
+            } catch (TimeoutException e) {
+                LOGGER.warning("Request timeout for station: " + stationID + "\n");
+                sendResponse(null, 408, aggregationServer.clock.increment());
+            } catch (InterruptedException | ExecutionException e) {
+                LOGGER.warning("Error waiting for response: " + e.getMessage() + "\n");
+                sendResponse(null, 500, aggregationServer.clock.increment());
             }
 
         } catch (Exception e) {
-            LOGGER.warning("Error processing GET request: " + e.getMessage());
-            sendResponse(null, 500, aggregationServer.getLamportClock());
+            LOGGER.warning("Error processing GET request: " + e.getMessage() + "\n");
+            sendResponse(null, 500, aggregationServer.clock.increment());
         }
     }
 
-    private void handlePutRequest(String request) throws IOException {
-        StringBuilder jsonBuilder = new StringBuilder();
+    private void handlePutRequest() throws IOException {
+        // Status updates and initialization
+        LOGGER.info("Processing PUT request\n");
         String line;
-        int clientLamportClock = -1;
+        int receivedLamportClock = -1;
+        int contentLength = -1;
 
         try {
-            while (!(line = in.readLine()).isEmpty()) {
+            // 1. Parse headers
+            while (((line = in.readLine()) != null) && (!line.isEmpty())) {
                 if (line.startsWith("Lamport-Clock:")) {
                     try {
-                        clientLamportClock = Integer.parseInt(line.split(":")[1].trim());
+                        receivedLamportClock = Integer.parseInt(line.split(":")[1].trim());
+                        LOGGER.fine("Received Lamport clock: " + receivedLamportClock + "\n");
                     } catch (NumberFormatException e) {
-                        sendResponse(null, 400, aggregationServer.getLamportClock());
+                        LOGGER.warning("Invalid Lamport clock format: " + e.getMessage() + "\n");
+                        sendResponse(null, 400, aggregationServer.clock.increment());
+                        return;
+                    }
+                } else if (line.startsWith("Content-Length:")) {
+                    try {
+                        contentLength = Integer.parseInt(line.split(":")[1].trim());
+                        LOGGER.fine("Content length: " + contentLength + "\n");
+                    } catch (NumberFormatException e) {
+                        LOGGER.warning("Invalid content length format: " + e.getMessage() + "\n");
+                        sendResponse(null, 400, aggregationServer.clock.increment());
                         return;
                     }
                 }
             }
 
-            while (in.ready()) {
-                jsonBuilder.append(in.readLine());
-            }
-
-            String jsonData = jsonBuilder.toString();
-            if (jsonData.isEmpty() || clientLamportClock == -1) {
-                sendResponse(null, 400, aggregationServer.getLamportClock());
+            // 2. Validate headers: send error response if relevant properties are wrong
+            if (receivedLamportClock == -1 || contentLength == -1) {
+                LOGGER.warning("Missing required headers\n");
+                sendResponse(null, 400, aggregationServer.clock.increment());
                 return;
             }
 
-            int newLamportClock = aggregationServer.updateLamportClock(clientLamportClock);
+            // 3. Read JSON body with proper length handling
+            char[] buffer = new char[contentLength];
+            int totalRead = 0;
+            while (totalRead < contentLength) {
+                int read = in.read(buffer, totalRead, contentLength - totalRead);
+                if (read == -1) {
+                    LOGGER.warning("Unexpected end of input stream while reading JSON body.\n");
+                    sendResponse(null, 400, aggregationServer.clock.increment());
+                    return;
+                }
+                totalRead += read;
+            }
+            String jsonData = new String(buffer);
 
-            WeatherData weatherData = objectMapper.readValue(jsonData, WeatherData.class);
-            boolean isNew = aggregationServer.getWeatherData(weatherData.getId()) == null;
+            // 4. Validate and parse JSON
+            if (jsonData.isEmpty()) {
+                LOGGER.warning("Received empty JSON body\n");
+                sendResponse(null, 400, aggregationServer.clock.increment());
+                return;
+            }
 
-            aggregationServer.updateWeatherData(weatherData.getId(), weatherData);
-            sendResponse(null, isNew ? 201 : 202, newLamportClock);
+            // 5. Update lamport clock
+            aggregationServer.clock.updateOnReceive(receivedLamportClock);
 
-        } catch (Exception e) {
-            LOGGER.warning("Error processing PUT request: " + e.getMessage());
-            sendResponse(null, 500, aggregationServer.getLamportClock());
+            // 6. Get station ID
+            JsonNode jsonNode = objectMapper.readTree(jsonData);
+            String stationId = null;
+            if (jsonNode.has("id")) {
+                stationId = jsonNode.get("id").asText();
+            }
+            if (stationId == null || stationId.isEmpty()) {
+                LOGGER.warning("Weather data missing ID.\n");
+                sendResponse(null, 400, aggregationServer.clock.increment());
+                return;
+            }
+
+            // 7. Create and queue request
+            Request request = new Request(
+                    "PUT",
+                    stationId,
+                    receivedLamportClock,
+                    jsonData
+            );
+            aggregationServer.queueRequest(request);
+
+            // 8. Wait for request to be served / wait for response
+            try {
+                boolean isNew = aggregationServer.getWeatherData(stationId) == null;
+                String response = request.getResponse().get(30, TimeUnit.SECONDS);
+                int statusCode = isNew ? 201 : 200;
+
+                // 9. Handle null case & send appropriate response
+                if (response.isEmpty()) {
+                    sendResponse(null, statusCode, aggregationServer.clock.increment());
+                } else {
+                    sendResponse(response, statusCode, aggregationServer.clock.increment());
+                }
+
+                LOGGER.info("Successfully processed PUT request for station ID: " + stationId + " (Status: " + statusCode + ")\n");
+            } catch (TimeoutException e) {
+                LOGGER.warning("Request timeout for PUT request\n");
+                sendResponse(null, 408, aggregationServer.clock.increment());
+            } catch (InterruptedException | ExecutionException e) {
+                LOGGER.warning("Error waiting for response: " + e.getMessage() + "\n");
+                sendResponse(null, 500, aggregationServer.clock.increment());
+            }
+        } catch (IOException e) {
+            LOGGER.severe("IO Error processing PUT request: " + e.getMessage() + "\n");
+            sendResponse(null, 500, aggregationServer.clock.increment());
         }
     }
 
-    /**
-     *
-     * @param message http body
-     * @throws IOException
-     */
-    // Helper method to send an HTTP response
+
     private void sendResponse(String message, int statusCode, int lamportClock) throws IOException {
-        out.write("HTTP/1.1 " + statusCode + " " + getStatusMessage(statusCode));
-        out.newLine();
-        out.write("Content-Type: application/json");
-        out.newLine();
-        out.write("Lamport-Clock: " + lamportClock);
-        out.newLine();
-        out.write("Content-Length: " + (message != null ? message.length() : 0));
-        out.newLine();
-        out.newLine();
-
+        String response = String.format("HTTP/1.1 %d %s\r\n", statusCode, getStatusMessage(statusCode));
+        response += String.format("Content-Type: application/json\r\n");
+        response += String.format("Lamport-Clock: %d\r\n", lamportClock);
+        response += String.format("Content-Length: %d\r\n", (message != null ? message.length() : 0));
+        response += "\r\n"; // Empty line to separate headers from body
         if (message != null) {
-            out.write(message);
+            response += message;
         }
+        out.write(response);
         out.flush();
+        LOGGER.info("Sent response with status " + statusCode + " and body length " + (message != null ? message.length() : 0) + "\n");
     }
+
 
     // Helper method to get the status message corresponding to a status code
     private String getStatusMessage(int statusCode) {
@@ -201,6 +285,7 @@ public class RequestHandler implements Runnable {
             case 204: return "No Content";
             case 400: return "Bad Request";
             case 404: return "Not Found";
+            case 408: return "Timeout";
             case 409: return "Conflict";
             case 500: return "Internal Server Error";
             default: return "Unknown";
@@ -213,10 +298,9 @@ public class RequestHandler implements Runnable {
             if (out != null) out.close();
             if (clientSocket != null) clientSocket.close();
         } catch (IOException e) {
-            LOGGER.warning("Error closing connection: " + e.getMessage());
+            LOGGER.warning("Error closing connection: " + e.getMessage() + "\n");
         }
     }
 
 }
 
-// UPDATE CODE FOR REMOVING STALE DATA

@@ -1,0 +1,21 @@
+Oct 28, 2024 6:19:12 PM org.aggregationServer.GETClient <init>
+INFO: [Client Terminal-Client] Initialized for server localhost:4567
+
+Oct 28, 2024 6:19:12 PM org.aggregationServer.GETClient run
+INFO: [Client Terminal-Client] Starting...
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.GETClient run
+INFO: [Client Terminal-Client] Requesting data for station: IDS60901
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60901 (Lamport clock: 1)
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.GETClient readJsonResponse
+WARNING: Invalid content length: 0
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:404. New Lamport clock: 4
+
+Oct 28, 2024 6:19:39 PM org.aggregationServer.GETClient displayWeatherData
+WARNING: Received JSON is empty
+

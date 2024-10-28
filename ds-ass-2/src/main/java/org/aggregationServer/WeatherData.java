@@ -1,14 +1,12 @@
 package org.aggregationServer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class WeatherData {
     private String id;
     private String name;
     private String state;
-    @JsonProperty("time_zone")
+    @JsonProperty("time_zone") // have to do this bc of the way Jackson JSON naming is configured (camel case)
     private String timeZone;
     private double lat;
     private double lon;

@@ -3,7 +3,6 @@
 Project Build Details:
 - Built using Maven with JUnit dependencies in Intellij IDEA.
 - It would help you run the tests so much easier with the IDE unless you know how to build in vscode using the pom.xml file that I included.
-- Please do not rely on my design sketch as I have made significant changes to it.
 
 Folder Directory structure should look something like this:
 ```
@@ -23,7 +22,7 @@ Folder Directory structure should look something like this:
         └───test
             └───java
                 └───org.aggregationServer
-                    └───WeatherSystemIT.java
+                    └───......
 ```
 
 Requirements:
@@ -38,3 +37,29 @@ To run and test:
 
 To package project into Jar files if needed
 - `mvn package`
+
+-----------------------
+
+To run manually from terminal:
+
+1. Make sure that you are in the project root folder `ds-ass-2`
+
+2. Compile the entire project: 
+```mvn clean compile```
+
+3. Run the server (from project root)
+```java -cp target/classes:$(mvn dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q) org.aggregationServer.AggregationServer```
+
+4. In a different terminal, run the client
+```java -cp target/classes:$(mvn dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q) org.aggregationServer.GETClient <server url>```
+   - default server url is "localhost:4567"
+   - you can specify a different port: "localhost:9999"
+
+5. In a different terminal, run the content server (default server url is "localhost:4567")
+```java -cp target/classes:$(mvn dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q) org.aggregationServer.ContentServer <server url> <content server file> <milliseconds>```
+   - default server url is "localhost:4567"
+   - you can specify a different port: "localhost:9999"
+   - content server file path: `content-server-files/<text-file>`
+   - milliseconds represent the interval between PUT requests for this particular content server
+   - eg: `java -cp target/classes:$(mvn dependency:build-classpath -Dmdep.outputFile=/dev/stdout -q) org.aggregationServer.ContentServer localhost:4567 content-server-files/CS01.txt 20000`
+    

@@ -4,24 +4,24 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.*;
-import java.nio.CharBuffer;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Stream;
 import java.util.logging.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 
-public class GETClient {
-    private Socket socket;
-    private BufferedReader bufferedReader;
-    private BufferedWriter bufferedWriter;
-    private AtomicInteger lamportClock;
-    private ObjectMapper objectMapper;
+public class GETClient implements Runnable{
+
+    private final String serverAddress;
+    private final int serverPort;
+
+    private LamportClock clock;
+    private final ObjectMapper objectMapper;
     private static final Logger LOGGER = Logger.getLogger(GETClient.class.getName());
+
+    private volatile boolean isRunning;
+    private final String clientId; // To identify different test clients
+    private final Queue<String> requestQueue; // For storing stations IDs to request
 
     /**
      * Constructs a GETClient for the sole purpose of GET-ting weather data from the server.
@@ -30,29 +30,39 @@ public class GETClient {
      * @param serverAddress url pointing to the address that client wants to connect to
      * @param serverPort an integer specifying server's port number
      */
-    public GETClient(String serverAddress, int serverPort) throws IOException {
+    public GETClient(String serverAddress, int serverPort, String clientId) throws IOException {
+        // Mainly for testing multiple clients
+        this.clientId = clientId;
 
-        try {
-            this.socket = new Socket(serverAddress, serverPort);
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            this.lamportClock = new AtomicInteger(0);
-            this.objectMapper = new ObjectMapper();
+        // Set up logging file before doing anything else
+        setupLogging();
 
-            setupLogging();
+        this.serverAddress = serverAddress;
+        this.serverPort = serverPort;
 
-            // Register a shutdown hook to close the resources when the application is interrupted (ie Ctrl+C from terminal)
-            Runtime.getRuntime().addShutdownHook(new Thread(this::closeEverything));
+        this.clock = new LamportClock("GETClient_" + clientId);
+        this.objectMapper = new ObjectMapper();
 
-            LOGGER.info("GETClient connected to " + serverAddress + ":" + serverPort);
+        // Mainly for testing multiple clients
+        this.isRunning = true;
+        this.requestQueue = new ConcurrentLinkedQueue<>();
 
-        } catch (UnknownHostException e) {
-            LOGGER.severe("Unknown host: " + e.getMessage());
-            closeEverything();
-        } catch (IOException e) {
-            LOGGER.severe("Unable to create socket for GETClient: " + e.getMessage());
-            closeEverything();
-        }
+        LOGGER.info(String.format("[Client %s] Initialized for server %s:%d\n", clientId, serverAddress, serverPort));
+    }
+
+    /**
+     * Add a station ID to be requested by this client
+     */
+    public void addRequest(String stationId) {
+        requestQueue.offer(stationId);
+    }
+
+    /**
+     * Gracefully stop the client
+     */
+    public void shutdown() {
+        isRunning = false;
+        LOGGER.info(String.format("[Client %s] Shutting down...\n", clientId));
     }
 
     /**
@@ -65,8 +75,9 @@ public class GETClient {
                 LOGGER.removeHandler(handler);
             }
 
-            // Create file handler
-            FileHandler fileHandler = new FileHandler("getclient.log", true);
+            // Create file handler with clientId in filename
+            String logFile = String.format("runtime-files/getclient_%s.log", clientId);
+            FileHandler fileHandler = new FileHandler(logFile, true);
             fileHandler.setFormatter(new SimpleFormatter());
 
             // Create console handler
@@ -83,23 +94,11 @@ public class GETClient {
             // Prevent logging from being passed to parent handlers
             LOGGER.setUseParentHandlers(false);
         } catch (IOException e) {
-            System.err.println("Failed to set up logging: " + e.getMessage());
+            System.err.println("Failed to set up logging: " + e.getMessage() + "\n");
+            System.exit(-1);
         }
     }
 
-    /**
-     * Closes the client handler's socket, its buffered reader and buffered writer.
-     */
-    private void closeEverything() {
-        try {
-            if (this.socket != null) this.socket.close();
-            if (this.bufferedReader != null) this.bufferedReader.close();
-            if (this.bufferedWriter != null) this.bufferedWriter.close();
-            LOGGER.info("GETClient resources closed");
-        } catch (IOException e) {
-            LOGGER.severe("Unable to close socket for GETClient: " + e.getMessage());
-        }
-    }
 
     /**
      * Utility method to parse the server URL. Appends URL with "http://" if argument does not begin with that
@@ -117,83 +116,85 @@ public class GETClient {
     }
 
     /**
-     *
-     * @param stationID
+     * Sends a get request to the aggregated server (assuming Keep-Alive to maintain persistent connections)
+     * Maintain persistent connection for simplicity in testing
+     * @param stationID a string representing the weather station content to be queried
      */
     public void sendGetRequest(String stationID) {
-        try {
-            int currentClock = lamportClock.getAndIncrement();  ////// do you need to increment before sending???
-            String request = String.format("GET /weather.json?station-id=%s&lamport-clock=%d HTTP/1.1", stationID, currentClock);
-            bufferedWriter.write(request);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+        try (Socket socket = new Socket(serverAddress, serverPort);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 
-            LOGGER.info("Sent GET request for station: " + stationID + " with Lamport clock: " + currentClock);
+            // Send GET request
+            String request = String.format("GET /weather_data.json?station-id=%s&lamport-clock=%d HTTP/1.1", stationID, clock.increment());
+            out.write(request);
+            out.newLine();
+            out.flush();
+            LOGGER.info("Sent GET request for station: " + stationID + " (Lamport clock: " + clock.getValue() + ")\n");
 
-            // Read headers
+            // Read response
             String line;
             int contentLength = 0;
-            int newLamportClock = -1;
-            while ((line = bufferedReader.readLine()) != null && !line.isEmpty()) {
-                if (line.startsWith("Content-Length:")) {
-                    contentLength = Integer.parseInt(line.split(":")[1].trim());
+            int receivedLamportClock = -1;
+            int statusCode = 0;
+
+            // Read headers
+            while ((line = in.readLine()) != null && !line.isEmpty()) {
+                if (line.startsWith("HTTP/1.1")) {
+                    statusCode = Integer.parseInt(line.split(" ")[1].trim());
                 } else if (line.startsWith("Lamport-Clock:")) {
-                    newLamportClock = Integer.parseInt(line.split(":")[1].trim());
+                    receivedLamportClock = Integer.parseInt(line.split(":")[1].trim());
+                } else if (line.startsWith("Content-Length:")) {
+                    contentLength = Integer.parseInt(line.split(":")[1].trim());
                 }
             }
 
-            // Read the JSON body
-            String jsonResponse = readJsonResponse(contentLength);
+            // Read the JSON response body
+            String jsonResponse = readJsonResponse(in, contentLength);
 
-            lamportClock.set(Math.max(lamportClock.get(), newLamportClock));
-            LOGGER.info("Received response. New Lamport clock: " + lamportClock.get());
+            // Update lamport clock
+            clock.updateOnReceive(receivedLamportClock);
+            LOGGER.info("Received response with status:" + statusCode + ". New Lamport clock: " + clock.getValue() + "\n");
 
             displayWeatherData(jsonResponse);
 
         } catch (IOException e) {
-            LOGGER.severe("Unable to send GET request: " + e.getMessage());
+            LOGGER.severe("Error during GET request: " + e.getMessage() + "\n");
         }
     }
 
     /**
      * abstracted away the part where we read in JSON response
+     * @param in buffered reader
      * @param contentLength length of response body from server
      * @return the actual json response
      * @throws IOException when error occurs on I/O
      */
-    private String readJsonResponse(int contentLength) throws IOException {
+    private String readJsonResponse(BufferedReader in, int contentLength) throws IOException {
         if (contentLength <= 0) {
-            LOGGER.warning("Invalid content length: " + contentLength);
+            LOGGER.warning("Invalid content length: " + contentLength + "\n");
             return "";
         }
 
-        CharBuffer buffer = CharBuffer.allocate(contentLength);
+        char[] buffer = new char[contentLength];
         int totalRead = 0;
+
+        // Only read in specified amount of characters
         while (totalRead < contentLength) {
-            int charsRead = bufferedReader.read(buffer);
-            if (charsRead == -1) {
-                LOGGER.warning("End of stream reached before reading all content. Read " + totalRead + " out of " + contentLength + " chars.");
+            int read = in.read(buffer, totalRead, contentLength - totalRead);
+            if (read == -1) {
+                LOGGER.warning("End of stream reached before reading all content. Read " + totalRead + " out of " + contentLength + " chars." + "\n");
                 break;
             }
-            totalRead += charsRead;
+            totalRead += read;
         }
 
-        buffer.flip();
-        String jsonResponse = buffer.toString();
-
-        if (totalRead < contentLength) {
-            LOGGER.warning("Incomplete read: expected " + contentLength + " chars, got " + totalRead);
-        } else if (totalRead > contentLength) {
-            LOGGER.warning("Read more data than expected: " + totalRead + " vs " + contentLength);
-            jsonResponse = jsonResponse.substring(0, contentLength);
-        }
-
-        return jsonResponse;
+        return new String(buffer, 0, totalRead);
     }
 
     /**
      * Make jsonResponse string into JSONNode object and then print out the fields and entries
-     * @param jsonResponse
+     * @param jsonResponse json response in string format
      */
     public void displayWeatherData(String jsonResponse) {
         try {
@@ -202,12 +203,12 @@ public class GETClient {
 
             // Validate that the JSON is not empty
             if (jsonNode.isEmpty()) {
-                LOGGER.warning("Received JSON is empty");
+                LOGGER.warning("Received JSON is empty\n");
                 return;
             }
 
-            LOGGER.info("Received weather data:");
-            StringBuilder weatherInfo = new StringBuilder("Weather Data:\n");
+            LOGGER.info("Received weather data:\n");
+            StringBuilder weatherInfo = new StringBuilder("Weather Data:\n\n");
 
             // Iterate through all fields in the JsonNode
             Iterator<Map.Entry<String, JsonNode>> fields = jsonNode.fields();
@@ -231,11 +232,41 @@ public class GETClient {
             }
 
             // Log the complete weather information
-            LOGGER.info(weatherInfo.toString());
+            LOGGER.info(weatherInfo.toString() + "\n");
 
         } catch (IOException e) {
-            LOGGER.severe("Error parsing weather data: " + e.getMessage());
+            LOGGER.severe("Error parsing weather data: " + e.getMessage() + "\n");
         }
+    }
+
+
+    @Override
+    public void run() {
+        LOGGER.info("[Client " + clientId + "] Starting...\n");
+
+        while (isRunning) {
+            String stationId = requestQueue.poll();
+
+            if (stationId != null) {
+                // Check regex for station id
+                if (stationId.matches("IDS\\d{5}")) {
+                    LOGGER.info(String.format("[Client %s] Requesting data for station: %s\n", clientId, stationId));
+                    sendGetRequest(stationId);
+                } else {
+                    LOGGER.warning(String.format("[Client %s] Invalid station ID: %s\n", clientId, stationId));
+                }
+            } else {
+                // No requests, sleep briefly
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+
+        LOGGER.info(String.format("[Client %s] Stopped processing requests.\n", clientId));
     }
 
 
@@ -247,14 +278,18 @@ public class GETClient {
      */
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Usage: java GETClient <serverURL>");
+            System.out.println("Usage: java GETClient <server_address:port>\n");
             return;
         }
 
         try {
             String serverURL = args[0];
             URL url = parseURL(serverURL);
-            GETClient client = new GETClient(url.getHost(), url.getPort());
+
+            // Create single client for terminal use
+            GETClient client = new GETClient(url.getHost(), url.getPort(), "Terminal-Client");
+            Thread clientThread = new Thread(client);
+            clientThread.start();
 
             Scanner scanner = new Scanner(System.in);
 
@@ -263,21 +298,26 @@ public class GETClient {
                     .takeWhile(input -> !input.equalsIgnoreCase("exit"))
                     .forEach(stationID -> {
                         if (stationID.matches("IDS\\d{5}")) {
-                            LOGGER.info("Requesting data for station: " + stationID);
-                            client.sendGetRequest(stationID);
+                            client.addRequest(stationID);
                         } else {
-                            LOGGER.warning("Invalid station ID entered: " + stationID + "Please enter in the format 'IDSxxxxx' where x is a digit.");
+                            LOGGER.warning("Invalid station ID entered: " + stationID +
+                                    "\nPlease enter in the format 'IDSxxxxx' where x is a digit.\n");
                         }
                     });
 
-//            client.closeEverything();
+            // Shutdown client
+            client.shutdown();
+            clientThread.join();
 
         } catch (MalformedURLException e) {
-            LOGGER.severe("Invalid server URL format. Please use a valid format like 'http://servername:port'");
+            LOGGER.severe("Invalid server URL format. Please use a valid format like 'http://servername:port'\n");
         } catch (URISyntaxException e) {
-            LOGGER.severe("Unable to create URI as provided server URL violates RFC 2396: " + e.getMessage());
+            LOGGER.severe("Unable to create URI as provided server URL violates RFC 2396: " + e.getMessage() + "\n");
         } catch (IOException e) {
-            LOGGER.severe("Could not create client: " + e.getMessage());
+            LOGGER.severe("Could not create client: " + e.getMessage() + "\n");
+        } catch (InterruptedException e) {
+            LOGGER.severe("Client thread interrupted: " + e.getMessage() + "\n");
+            Thread.currentThread().interrupt();
         }
     }
 }
