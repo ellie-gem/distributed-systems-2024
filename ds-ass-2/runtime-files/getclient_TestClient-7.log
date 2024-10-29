@@ -1,0 +1,457 @@
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-0] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-7] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-3] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-9] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-0] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-8] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-4] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-7] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-5] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-6] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-8] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-9] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-2] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-6] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-1] Initialized for server localhost:37273
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-5] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-2] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-1] Starting...
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-1] Requesting data for station: IDS60901
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60901 (Lamport clock: 15)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-3] Requesting data for station: IDS60903
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-0] Requesting data for station: IDS60900
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60903 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-4] Requesting data for station: IDS60904
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60900 (Lamport clock: 13)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-7] Requesting data for station: IDS60907
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60904 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60907 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 24
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 26
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 25
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-8] Requesting data for station: IDS60908
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 28
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-6] Requesting data for station: IDS60906
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60901
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-9] Requesting data for station: IDS60909
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60904
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 30
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-5] Requesting data for station: IDS60905
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-2] Requesting data for station: IDS60902
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60908 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60903
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60900
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 32
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60907
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60902 (Lamport clock: 11)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60906 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60908
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60905 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60909 (Lamport clock: 1)
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 34
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 36
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60906
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60909
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 38
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60902
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 40
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 30, 2024 12:22:25 AM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60905
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-3] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-9] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-4] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-8] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-6] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-4] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-5] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-2] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-0] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-1] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient-7] Shutting down...
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-1] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-3] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-0] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-7] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-8] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-9] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-6] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-2] Stopped processing requests.
+
+Oct 30, 2024 12:22:26 AM org.aggregationServer.GETClient run
+INFO: [Client TestClient-5] Stopped processing requests.
+
+Oct 30, 2024 12:22:31 AM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient] Shutting down...
+

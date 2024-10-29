@@ -87,9 +87,9 @@ public class AggregationServer {
      * @param port an integer specifying port number
      * @throws IOException
      */
-    public AggregationServer(int port) throws IOException  {
+    public AggregationServer(int port, boolean log) throws IOException  {
         // Set up logging file before doing anything else
-        setupLogging();
+        if (log) setupLogging();
 
         try {
             this.serverSocket = new ServerSocket(port);
@@ -117,12 +117,7 @@ public class AggregationServer {
             );
             this.requestProcessor = new RequestProcessor();
 
-
             loadDataFromFile(); // Is useful for when server restarts after a crash
-
-            startPeriodicSave();
-
-            startExpirationChecker();
 
             // Register a shutdown hook to close the resources when the application is interrupted (ie Ctrl+C from terminal)
             Runtime.getRuntime().addShutdownHook(new Thread(this::stopServer));
@@ -158,6 +153,9 @@ public class AggregationServer {
         // Start request processor thread explicitly here when starting server
         this.processorThread = new Thread(requestProcessor);
         this.processorThread.start();
+
+        startPeriodicSave();
+        startExpirationChecker();
 
         while (isRunning) {
             try {
@@ -288,7 +286,7 @@ public class AggregationServer {
     /**
      * Run expiry checks across concurrent hash maps every second
      */
-    private void startExpirationChecker() {
+    public void startExpirationChecker() {
         LOGGER.info("Started expiration checker\n");
         scheduler.scheduleAtFixedRate(() -> {
             long now = System.currentTimeMillis();
@@ -393,6 +391,20 @@ public class AggregationServer {
 
 
     /**
+     * Clears the map (used for tests)
+     */
+    public void clearTestData() {
+        weatherData.clear();
+        lastUpdateTimes.clear();
+        isDirty.set(true);
+    }
+
+    public ServerSocket getServerSocket() {
+        return this.serverSocket;
+    }
+
+
+    /**
      * Main function to start aggregation server
      * @param args command line arguments when starting the aggregated server
      * @throws IOException when unable to instantiate and start the aggregated server object
@@ -406,7 +418,7 @@ public class AggregationServer {
         }
 
         try {
-            AggregationServer server = new AggregationServer(startingPort);
+            AggregationServer server = new AggregationServer(startingPort, true);
             server.start();
         } catch (IOException e) {
             LOGGER.severe("Could not start server: " + e.getMessage() + "\n");

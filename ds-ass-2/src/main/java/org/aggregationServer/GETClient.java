@@ -320,4 +320,8 @@ public class GETClient implements Runnable{
             Thread.currentThread().interrupt();
         }
     }
+
+    public LamportClock getClock() {
+        return this.clock;
+    }
 }

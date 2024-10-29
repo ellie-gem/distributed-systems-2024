@@ -20,7 +20,7 @@ public class RequestHandler implements Runnable {
 
     /**
      * Constructs a request handler
-     * @param clientSocket a socket (passed to client handler from accepting the connection request)
+     * @param clientSocket a socket (passed to request handler from accepting the connection request)
      *                     that is used to communicate with the client
      * @throws IOException when error occur while creating buffered reader and writer
      */
@@ -132,7 +132,7 @@ public class RequestHandler implements Runnable {
             try {
                 String response = request.getResponse().get(30, TimeUnit.SECONDS);
 
-                if (response.isEmpty()) {
+                if (response.isEmpty() || response == null) {
                     sendResponse(null, 404, aggregationServer.clock.increment());
                 } else {
                     sendResponse(response, 200, aggregationServer.clock.increment());

@@ -196,7 +196,7 @@ public class ContentServer implements Runnable {
      * @return String containing the JSON-formatted weather data
      * @throws IOException if there are file reading or JSON conversion errors
      */
-    private String parseFileToJson() throws IOException {
+    public String parseFileToJson() throws IOException {
         Map<String, Object> weatherData = new LinkedHashMap<>();
         ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);  // Enable pretty printing
 
@@ -302,5 +302,13 @@ public class ContentServer implements Runnable {
             LOGGER.severe("Interrupted while joining the contentServer threads: " + e.getMessage() + "\n");
             System.exit(-1);
         }
+    }
+
+    public LamportClock getClock() {
+        return this.clock;
+    }
+
+    public void set_put_interval_ms(int interval) {
+        PUT_INTERVAL_MS = interval;
     }
 }

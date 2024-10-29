@@ -1,0 +1,79 @@
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer <init>
+INFO: [Server TestServer-1] Content Server created.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer <init>
+INFO: [Server TestServer-4] Content Server created.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer <init>
+INFO: [Server TestServer-0] Content Server created.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer <init>
+INFO: [Server TestServer-2] Content Server created.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer <init>
+INFO: [Server TestServer-3] Content Server created.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer parseFileToJson
+SEVERE: Error reading file: File is missing 'id' field. Rejecting the feed.
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer parseFileToJson
+SEVERE: Error reading file: File is missing 'id' field. Rejecting the feed.
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+SEVERE: [Server TestServer-3] Error: File is missing 'id' field. Rejecting the feed.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-1] Weather data parsed successfully.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+SEVERE: [Server TestServer-4] Error: File is missing 'id' field. Rejecting the feed.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-0] Weather data parsed successfully.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-0] started. Sending PUT requests every 2000 ms. Ctrl+C to stop.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-1] started. Sending PUT requests every 2000 ms. Ctrl+C to stop.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-2] Weather data parsed successfully.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-2] started. Sending PUT requests every 2000 ms. Ctrl+C to stop.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer sendPutRequest
+INFO: PUT request sent, Response Code: 200
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer sendPutRequest
+INFO: PUT request sent, Response Code: 200
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-1] Weather data sent.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-0] Weather data sent.
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer sendPutRequest
+INFO: PUT request sent, Response Code: 200
+
+Oct 30, 2024 12:51:11 AM org.aggregationServer.ContentServer run
+INFO: [ContentServer TestServer-2] Weather data sent.
+
+Oct 30, 2024 12:51:13 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer-3] Shutting down...
+
+Oct 30, 2024 12:51:13 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer-1] Shutting down...
+
+Oct 30, 2024 12:51:13 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer-4] Shutting down...
+
+Oct 30, 2024 12:51:13 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer-0] Shutting down...
+
+Oct 30, 2024 12:51:13 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer-2] Shutting down...
+
+Oct 30, 2024 12:51:18 AM org.aggregationServer.ContentServer shutdown
+INFO: [ContentServer TestServer] Shutting down...
+

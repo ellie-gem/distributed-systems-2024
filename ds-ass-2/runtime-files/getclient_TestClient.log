@@ -1,0 +1,9 @@
+Oct 29, 2024 11:35:21 PM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient] Initialized for server localhost:4567
+
+Oct 29, 2024 11:35:22 PM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient] Shutting down...
+
+Oct 30, 2024 12:22:24 AM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient] Initialized for server localhost:37273
+

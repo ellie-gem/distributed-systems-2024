@@ -1,0 +1,114 @@
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient <init>
+INFO: [Client TestClient-2] Initialized for server localhost:4567
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient run
+INFO: [Client TestClient-1] Starting...
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient run
+INFO: [Client TestClient-2] Starting...
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient run
+INFO: [Client TestClient-2] Requesting data for station: IDS60903
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60903 (Lamport clock: 1)
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 10
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60903
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient run
+INFO: [Client TestClient-0] Requesting data for station: IDS60901
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60901 (Lamport clock: 1)
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient run
+INFO: [Client TestClient-1] Requesting data for station: IDS60902
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 12
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Sent GET request for station: IDS60902 (Lamport clock: 1)
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60901
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient sendGetRequest
+INFO: Received response with status:200. New Lamport clock: 14
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Received weather data:
+
+Oct 29, 2024 11:35:37 PM org.aggregationServer.GETClient displayWeatherData
+INFO: Weather Data:
+
+id: IDS60902
+name: Adelaide (West Terrace /  ngayirdapira)
+state: SA
+lat: -34.9
+lon: 138.6
+cloud: Partly cloudy
+dewpt: 5.7
+press: 1023.9
+time_zone: CST
+local_date_time: 15/04:00pm
+local_date_time_full: 20230715160000
+air_temp: 13.3
+apparent_t: 9.5
+rel_hum: 60
+wind_dir: S
+wind_spd_kmh: 15
+wind_spd_kt: 8
+
+
+Oct 29, 2024 11:35:52 PM org.aggregationServer.GETClient shutdown
+INFO: [Client TestClient] Shutting down...
+
