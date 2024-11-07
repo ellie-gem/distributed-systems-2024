@@ -3,6 +3,7 @@
 
 Branches:
 
+- main : to be merged at end of semester kek
 - ass1 : whole package 
 - ass1submission : relevant files + pom.xml + organize.sh
 - ass2 : whole package
