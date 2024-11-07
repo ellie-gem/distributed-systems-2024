@@ -5,5 +5,5 @@ Branches:
 
 - ass1 : whole package 
 - ass1submission : relevant files + pom.xml + organize.sh
-- ass2 : whole package (not complete)
-- ass3 : whole package
+- ass2 : whole package
+- ass3 : whole package (tbd)
