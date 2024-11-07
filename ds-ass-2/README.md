@@ -96,7 +96,7 @@ To package project into Jar files if needed
    - Please specify 3 arguments: AggregationServer's address, the file it's supposed to read from, the interval between PUT requests (above 30 seconds only if u want to check for expiry).
    - I designed it so that the `ContentServer` will continuously send PUT requests every `x` intervals.
    - Once `ContentServer` is started, it will immediately send a PUT request to `AggregationServer`.
-   - Press ctrl + c to stop the 
+   - Press ctrl + c to stop the constant PUT requests
 3. Start `GETClient`:
    - Please speify 1 argument: AggregationServer's address
    - Once `GETClient` is started, it will only send GET requests when you enter a valid station id. 
@@ -116,4 +116,4 @@ Tests
 - JUnit
 - Some of my test files have some integrated components. I wasn't sure where to put them.
 
-I wanted to smash my laptop so many times while doing this. It doesnt help that my laptop is gets slow and glitchy bc I am running IDEA on WSL2
+I wanted to smash my laptop so many times while doing this. It doesnt help that my laptop gets slow and glitchy bc I am running IDEA on WSL2

@@ -284,7 +284,7 @@ public class AggregationServer {
     }
 
     /**
-     * Run expiry checks across concurrent hash maps every second
+     * Run expiry checks across concurrent hash maps every 30 seconds
      */
     public void startExpirationChecker() {
         LOGGER.info("Started expiration checker\n");
